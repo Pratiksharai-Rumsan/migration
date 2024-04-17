@@ -11,7 +11,7 @@ const mongoCollectionName = "organizations";
 async function connectMongoDB() {
   const mongoClient = new MongoClient(mongoUrl);
   await mongoClient.connect();
-  console.log("Connected to MongoDB");
+
   return mongoClient.db(mongoDbName).collection(mongoCollectionName);
 }
 
@@ -33,7 +33,6 @@ async function migrateData() {
   const mongoCollection = await connectMongoDB();
   const mongoData = await exportData(mongoCollection);
 
-  console.log(mongoData, "datafrommongoDB");
   try {
     for (const document of mongoData) {
       const transformedDocument = transformData(document);
