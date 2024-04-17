@@ -26,12 +26,6 @@ function transformData(document) {
 
   return {
     id: document._id.toString(),
-    // name: document.name,
-    // phone: document.phone,
-    // address: document.address,
-    // isBloodBank: true,
-    // createdAt: document.created_at,
-    // updatedAt: document.updated_at,
   };
 }
 
