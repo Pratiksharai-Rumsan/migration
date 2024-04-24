@@ -1,5 +1,8 @@
 const { PrismaClient } = require("@prisma/client");
 const { MongoClient } = require("mongodb");
+const {
+  transformOrganizationData,
+} = require("./transform-data/organizationTransform");
 
 const prisma = new PrismaClient();
 
@@ -21,29 +24,15 @@ async function exportData(mongoCollection) {
   return mongoData;
 }
 
-function transformData(document) {
-  return {
-    id: document._id.toString(),
-  };
-}
-
 async function migrateData() {
   const mongoCollection = await connectMongoDB();
   const mongoData = await exportData(mongoCollection);
 
   try {
     for (const document of mongoData) {
-      const transformedDocument = transformData(document);
+      const transformedDocument = transformOrganizationData(document);
       await prisma.organization.create({
-        data: {
-          id: transformedDocument.id,
-          name: document.name,
-          phone: document.phone,
-          address: document.address,
-          isBloodBank: true,
-          createdAt: document.created_at,
-          updatedAt: document.updated_at,
-        },
+        data: transformedDocument,
       });
     }
   } finally {
