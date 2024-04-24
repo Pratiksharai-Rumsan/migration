@@ -21,10 +21,131 @@ model Organization {
   phone       String
   email       String?
   address     String?
-  isBloodBank Boolean  
+  isBloodBank Boolean
+  events      Event[]  
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
 
   @@index([name])
+}
+
+model Event {
+  id             Int           @id @default(autoincrement())
+  uuid           String        @unique @default(uuid())
+  name           String
+  contactPhone   String
+  contactEmail   String?
+  contactName    String?
+  location       String
+  latitude       Decimal?
+  longitude      Decimal?
+  bloodBank      String
+  target         Int
+  volunteers     Volunteer[]
+  date           DateTime
+  endDate        DateTime?
+  startTime      DateTime
+  endTime        DateTime
+  isClosed       Boolean       @default(false)
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [uuid])
+  donations      Donation[]
+  donors         Donor[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  
+
+  @@index([name])
+  @@map("tbl_events")
+}
+
+
+
+model Donor {
+  id          Int        @id @default(autoincrement())
+  uuid        String     @unique @default(uuid())
+  name        String
+  phone       String     @unique
+  email       String?
+  dop         DateTime
+  dopNp       DateTime?
+  gender      Gender
+  bloodGroup  BloodGroup @default(DONT_KNOW)
+  location    String
+  latitude    Decimal?
+  longitude   Decimal?
+  lastDonated DateTime?
+  donation    Donation[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  Event       Event?     @relation(fields: [eventId], references: [uuid])
+  eventId     String?
+
+  @@index([name])
+  @@map("tbl_donors")
+}
+
+
+model Donation {
+  id           Int           @id @default(autoincrement())
+  uuid         String        @unique @default(uuid())
+  bloodBagType BloodBagType? @default(SINGLE)
+  bloodBagId   String?
+  tubeId       String?
+  consentUrl   String?
+  rejectReason Json?
+  note         String?
+  extras       Json?
+  custom       String?
+  eventId      String?
+  donorId      String?
+  event        Event?        @relation(fields: [eventId], references: [uuid])
+  donor        Donor?        @relation(fields: [donorId], references: [uuid])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@unique([donorId, eventId], name: "donorEventIdentifier")
+  @@unique([bloodBagId, eventId], name: "eventBloodbagIdentifier")
+  @@map("tbl_donations")
+}
+
+
+model Volunteer {
+  id      Int     @id @default(autoincrement())
+  uuid    String  @unique @default(uuid())
+  name    String
+  email   String?
+  phone   String
+  role    String?
+  eventId String
+  event   Event?  @relation(fields: [eventId], references: [uuid])
+
+  @@map("tbl_volunteers")
+}
+
+
+enum BloodGroup {
+  A_POSITIVE
+  A_NEGATIVE
+  B_POSITIVE
+  B_NEGATIVE
+  AB_POSITIVE
+  AB_NEGATIVE
+  O_POSITIVE
+  O_NEGATIVE
+  DONT_KNOW
+}
+
+enum BloodBagType {
+  SINGLE
+  DOUBLE
+  TRIPLE
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  UNKNOWN
 }

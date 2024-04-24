@@ -22,8 +22,6 @@ async function exportData(mongoCollection) {
 }
 
 function transformData(document) {
-  console.log(document, "document form migrateData");
-
   return {
     id: document._id.toString(),
   };
