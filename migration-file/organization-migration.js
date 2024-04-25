@@ -2,7 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const { MongoClient } = require("mongodb");
 const {
   transformOrganizationData,
-} = require("./transform-data/organizationTransform");
+} = require("../transform-data/organizationTransform");
 
 const prisma = new PrismaClient();
 

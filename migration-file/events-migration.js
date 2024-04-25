@@ -1,6 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const { MongoClient } = require("mongodb");
-const { transformEventData } = require("./transform-data/eventTransform");
+const { transformEventData } = require("../transform-data/eventTransform");
 
 const prisma = new PrismaClient();
 
