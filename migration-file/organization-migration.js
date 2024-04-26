@@ -25,36 +25,24 @@ async function exportData(mongoCollection) {
   return mongoData;
 }
 
-async function migrateData(batchSize) {
+async function migrateData() {
   const mongoCollection = await connectMongoDB();
-  let offset = 0;
+
+  const mongoData = await exportData(mongoCollection);
 
   try {
-    while (true) {
-      const mongoData = await exportData(mongoCollection, batchSize);
+    for (const document of mongoData) {
+      const organizationId = document._id.toString();
 
-      if (mongoData.length === 0) {
-        break;
+      if (processedOrganizationIds.has(organizationId)) {
+        console.log(`Skipping duplicate event with Id:${organizationId}`);
+        continue;
       }
-
-      for (const document of mongoData) {
-        const eventId = document._id.toString();
-
-        if (processedOrganizationIds.has(eventId)) {
-          console.log(`Skipping duplicate event with ID: ${eventId}`);
-          continue;
-        }
-
-        const transformedData = transformOrganizationData(document);
-
-        await prisma.organization.create({
-          data: transformedData,
-        });
-
-        processedOrganizationIds.add(eventId);
-      }
-
-      offset += batchSize;
+      const transformedDocument = transformOrganizationData(document);
+      await prisma.organization.create({
+        data: transformedDocument,
+      });
+      processedOrganizationIds.add(organizationId);
     }
   } finally {
     await prisma.$disconnect();
@@ -63,6 +51,4 @@ async function migrateData(batchSize) {
   console.log("Migration completed");
 }
 
-const batchSize = 10;
-
-migrateData(batchSize).catch(console.error);
+migrateData().catch(console.error);
