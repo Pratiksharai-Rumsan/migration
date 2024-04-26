@@ -22,12 +22,6 @@ async function exportData(mongoCollection) {
   return mongoData;
 }
 
-// function transformData(document) {
-//   return {
-//     id: document._id.toString(),
-//   };
-// }
-
 async function migrateData() {
   const mongoCollection = await connectMongoDB();
   const mongoData = await exportData(mongoCollection);
@@ -36,7 +30,7 @@ async function migrateData() {
     for (const document of mongoData) {
       const transformedData = transformEventData(document);
 
-      await prisma.events.create({
+      await prisma.event.create({
         data: transformedData,
       });
     }

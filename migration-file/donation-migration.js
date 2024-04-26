@@ -1,13 +1,15 @@
 const { PrismaClient } = require("@prisma/client");
 const { MongoClient } = require("mongodb");
 
-const { transformDonorData } = require("../transform-data/donorTransform");
+const {
+  transformDonationData,
+} = require("../transform-data/donationTransform");
 const prisma = new PrismaClient();
 
 const mongoUrl = "mongodb://localhost:27017";
 
 const mongoDbName = "donation-migration";
-const mongoCollectionName = "donors";
+const mongoCollectionName = "consents";
 
 async function connectMongoDB() {
   const mongoClient = new MongoClient(mongoUrl);
@@ -28,9 +30,9 @@ async function migrateData() {
 
   try {
     for (const document of mongoData) {
-      const transformedData = transformDonorData(document);
+      const transformedData = transformDonationData(document);
 
-      await prisma.donor.create({
+      await prisma.donation.create({
         data: transformedData,
       });
     }

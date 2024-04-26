@@ -34,6 +34,7 @@ function transformEventData(document) {
 
     date: transformDate(document.date),
     organizationId: transformBeneficiary(document.beneficiary),
+    isClosed: true,
     createdAt: transformCreateAt(document.created_at),
     updatedAt: transformUpdateAt(document.updated_at),
   };
