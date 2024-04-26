@@ -1,3 +1,6 @@
+const { Gender } = require("@prisma/client");
+const { BloodGroup } = require("@prisma/client");
+
 function transformId(id) {
   return id.toString();
 }
@@ -20,7 +23,13 @@ function transformLastDonatedDate(lastDonatedDate) {
   return new Date(lastDonatedDate);
 }
 function transformGender(gender) {
-  return gender;
+  if (gender === "M") {
+    return Gender.MALE;
+  } else if (gender === "F") {
+    return Gender.FEMALE;
+  } else {
+    return Gender.UNKNOWN;
+  }
 }
 
 function transfromPhone(phone) {
@@ -32,7 +41,26 @@ function transformEmail(email) {
 }
 
 function transformBloodGroup(bloodGroup) {
-  return bloodGroup;
+  switch (bloodGroup) {
+    case "A+":
+      return BloodGroup.A_POSITIVE;
+    case "A-":
+      return BloodGroup.A_NEGATIVE;
+    case "B+":
+      return BloodGroup.B_POSITIVE;
+    case "B-":
+      return BloodGroup.B_NEGATIVE;
+    case "AB+":
+      return BloodGroup.AB_POSITIVE;
+    case "AB-":
+      return BloodGroup.AB_NEGATIVE;
+    case "O+":
+      return BloodGroup.O_POSITIVE;
+    case "O-":
+      return BloodGroup.O_NEGATIVE;
+    default:
+      return BloodGroup.DONT_KNOW;
+  }
 }
 
 function transformCreateAt(createdat) {

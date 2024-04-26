@@ -1,3 +1,5 @@
+const { BloodBagType } = require("@prisma/client");
+
 function transformId(uuid) {
   return uuid.toString();
 }
@@ -10,7 +12,14 @@ function transformTubeId(tubeId) {
 }
 
 function transformBagType(bloodBagType) {
-  return bloodBagType;
+  switch (bloodBagType) {
+    case "single":
+      return BloodBagType.SINGLE;
+    case "double":
+      return BloodBagType.DOUBLE;
+    case "triple":
+      return BloodBagType.TRIPLE;
+  }
 }
 
 function transformDonorId(donorId) {
