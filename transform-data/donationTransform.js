@@ -33,8 +33,10 @@ function transformDonationData(document) {
     tubeId: transformTubeId(document.blood_info.tube_id),
 
     bloodBagType: transformBagType(document.blood_info.bag_type),
-    donorId: transformDonorId(document.donor),
-    eventId: transformEventId(document.event),
+    donorId: transformDonorId(document.donor), //UUID
+    //donorMongoId:
+    eventId: transformEventId(document.event), //UUID
+    //enventMongoId:
     createdAt: transformCreateAt(document.created_at),
     updatedAt: transformUpdateAt(document.updated_at),
   };

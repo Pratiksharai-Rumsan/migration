@@ -33,6 +33,8 @@ function transformOrganizationData(document) {
 
     createdAt: transformCreateAt(document.created_at),
     updatedAt: transformUpdateAt(document.updated_at),
+
+    //orgMongoId transformId(document._id),
   };
 }
 

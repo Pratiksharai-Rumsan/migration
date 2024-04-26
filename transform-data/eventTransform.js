@@ -28,15 +28,21 @@ function transformId(id) {
 
 function transformEventData(document) {
   return {
-    uuid: transformId(document._id),
+    uuid: transformId(document._id), //create new UUID
     name: transformName(document.name),
     location: transformLocation(document.location),
 
     date: transformDate(document.date),
-    organizationId: transformBeneficiary(document.beneficiary),
+    organizationId: transformBeneficiary(document.beneficiary), //Hlb Org UUID
+    //orgMongoId:
     isClosed: true,
     createdAt: transformCreateAt(document.created_at),
     updatedAt: transformUpdateAt(document.updated_at),
+
+    //beneficiaryId: transformBeneficiary(document.beneficiary), UUID
+    //contactInfo: {name, phone, email}
+
+    //eventMongoId transformId(document._id),
   };
 }
 
