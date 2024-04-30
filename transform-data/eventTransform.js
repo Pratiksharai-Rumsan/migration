@@ -1,3 +1,6 @@
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
 function transformName(name) {
   return name;
 }
@@ -10,42 +13,77 @@ function transformDate(date) {
   return new Date(date);
 }
 
+function transformStartTime(startTime) {
+  return startTime;
+}
+
+function transformEndTime(endTime) {
+  return endTime;
+}
+
 function transformBeneficiary(beneficiary) {
   return beneficiary.toString();
 }
 
 function transformCreateAt(createdat) {
-  return new DataTransfer(createdat);
+  return new Date(createdat);
 }
 
 function transformUpdateAt(updatedat) {
-  return new DataTransfer(updatedat);
+  return new Date(updatedat);
+}
+function transformTarget(target) {
+  return Number(target);
 }
 
 function transformId(id) {
   return id.toString();
 }
 
-function transformEventData(document) {
+async function lookupOrganizationId(orgMongoId) {
+  const organization = await prisma.organization.findUnique({
+    where: { orgMongoId },
+  });
+  if (!organization) {
+    throw new Error(`Organization with OrgMongoId ${orgMongoId} not found`);
+  }
+  return organization.uuid;
+}
+
+async function transformEventData(document) {
+  const convertOrgId = transformBeneficiary(document.beneficiary);
+  const organizationId = await lookupOrganizationId(convertOrgId);
+  console.log(organizationId, "organizationId from eventtransform");
   return {
-    uuid: transformId(document._id), //create new UUID
+    eventMongoId: transformId(document._id),
     name: transformName(document.name),
     location: transformLocation(document.location),
+    contactInfo: {
+      phone: document.phone,
+
+      name: document.contactname,
+    },
+    target: transformTarget(document.target),
 
     date: transformDate(document.date),
-    organizationId: transformBeneficiary(document.beneficiary), //Hlb Org UUID
-    //orgMongoId:
-    isClosed: true,
+    startTime: document.startTime,
+
+    endTime: document.endTime,
+
+    organizationId: organizationId, //Hlb Org UUID
+    //orgMongoId: transformBeneficiary(document.beneficiary),
+    isClosed: document.is_closed,
+    //beneficiaryId: transformBeneficiary(document.team),
     createdAt: transformCreateAt(document.created_at),
     updatedAt: transformUpdateAt(document.updated_at),
-
-    //beneficiaryId: transformBeneficiary(document.beneficiary), UUID
-    //contactInfo: {name, phone, email}
-
-    //eventMongoId transformId(document._id),
   };
 }
 
 module.exports = {
   transformEventData,
 };
+
+//beneficiaryId: transformBeneficiary(document.beneficiary), UUID
+//contactInfo: {name, phone, email}
+
+//eventMongoId transformId(document._id),

@@ -24,7 +24,7 @@ function transformId(id) {
 
 function transformOrganizationData(document) {
   return {
-    uuid: transformId(document._id),
+    orgMongoId: transformId(document._id),
     name: transformName(document.name),
     address: transformLocation(document.address),
 
@@ -33,11 +33,11 @@ function transformOrganizationData(document) {
 
     createdAt: transformCreateAt(document.created_at),
     updatedAt: transformUpdateAt(document.updated_at),
-
-    //orgMongoId transformId(document._id),
   };
 }
 
 module.exports = {
   transformOrganizationData,
 };
+
+//orgMongoId transformId(document._id),

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "tbl_events" ALTER COLUMN "endDate" SET DATA TYPE TEXT,
+ALTER COLUMN "startTime" SET DATA TYPE TEXT;

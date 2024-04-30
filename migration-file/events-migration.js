@@ -28,7 +28,8 @@ async function migrateData() {
 
   try {
     for (const document of mongoData) {
-      const transformedData = transformEventData(document);
+      const transformedData = await transformEventData(document);
+      console.log(transformedData, "transfromEvnetData");
 
       await prisma.event.create({
         data: transformedData,

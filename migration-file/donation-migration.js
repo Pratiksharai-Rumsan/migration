@@ -30,7 +30,8 @@ async function migrateData() {
 
   try {
     for (const document of mongoData) {
-      const transformedData = transformDonationData(document);
+      const transformedData = await transformDonationData(document);
+      console.log(transformedData, "transformedData");
 
       await prisma.donation.create({
         data: transformedData,
@@ -44,3 +45,6 @@ async function migrateData() {
 }
 
 migrateData().catch(console.error);
+
+//@@unique([donorId, eventId], name: "donorEventIdentifier")
+//@@unique([bloodBagId, eventId], name: "eventBloodbagIdentifier")

@@ -13,79 +13,77 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model Organization {
-  id          String      @id @default(uuid())
+  id          Int      @id @default(autoincrement())
   uuid        String   @unique @default(uuid())
+  orgMongoId  String   @unique
   name        String   @unique
   phone       String
   email       String?
   address     String?
   isBloodBank Boolean
-  events      Event[]  
+  events      Event[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
 
   @@index([name])
 }
 
 model Event {
-  id             Int           @id @default(autoincrement())
-  uuid           String        @unique @default(uuid())
+  id             Int         @id @default(autoincrement())
+  uuid           String      @unique @default(uuid())
+  eventMongoId   String      @unique 
   name           String
-  contactPhone   String
-  contactEmail   String?
-  contactName    String?
+  contactInfo    Json
   location       String
-  latitude       Decimal?
-  longitude      Decimal?
-  bloodBank      String
-  target         Int
+  geoLocation    Json?
+  bloodBank      String?
+  target         Int?
   volunteers     Volunteer[]
   date           DateTime
   endDate        DateTime?
-  startTime      DateTime
-  endTime        DateTime
-  isClosed       Boolean       @default(false)
+  startTime      String?
+  endTime        String?
+  isClosed       Boolean     @default(false)
   organizationId String?
-  organization   Organization? @relation(fields: [organizationId], references: [uuid])
-  donations      Donation[]
-  donors         Donor[]
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  
+
+  organization  Organization? @relation(fields: [organizationId], references: [uuid])
+  beneficiaryId String?
+  donations     Donation[]
+  donors        Donor[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   @@index([name])
   @@map("tbl_events")
 }
 
-
-
 model Donor {
-  id          Int        @id @default(autoincrement())
-  uuid        String     @unique @default(uuid())
-  name        String
-  phone       String     @unique
-  email       String?
-  dop         DateTime
-  dopNp       DateTime?
-  gender      Gender
-  bloodGroup  BloodGroup @default(DONT_KNOW)
-  location    String
-  latitude    Decimal?
-  longitude   Decimal?
-  lastDonated DateTime?
-  donation    Donation[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  Event       Event?     @relation(fields: [eventId], references: [uuid])
-  eventId     String?
+  id             Int        @id @default(autoincrement())
+  uuid           String     @unique @default(uuid())
+  donorMongoId   String     @unique
+  name           String      
+  phone          String     @unique
+  email          String?
+  dop            DateTime?
+  dopNp          DateTime?
+  gender         Gender
+  bloodInfo      Json
+  location       String
+  lastDonated    DateTime?
+  isActive       Boolean   @default(false)
+  source         Json?
+  geoLocation    Json
+  donation       Donation[]
+  donationLegacy DateTime[]
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  Event          Event?     @relation(fields: [eventId], references: [uuid])
+  eventId        String?
 
   @@index([name])
   @@map("tbl_donors")
 }
-
 
 model Donation {
   id           Int           @id @default(autoincrement())
@@ -105,11 +103,10 @@ model Donation {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
-  @@unique([donorId, eventId], name: "donorEventIdentifier")
-  @@unique([bloodBagId, eventId], name: "eventBloodbagIdentifier")
+  
+
   @@map("tbl_donations")
 }
-
 
 model Volunteer {
   id      Int     @id @default(autoincrement())
@@ -123,7 +120,6 @@ model Volunteer {
 
   @@map("tbl_volunteers")
 }
-
 
 enum BloodGroup {
   A_POSITIVE

@@ -5,23 +5,6 @@ function transformId(id) {
   return id.toString();
 }
 
-function transformName(name) {
-  return name;
-}
-
-function transformLocation(location) {
-  return location;
-}
-
-function transformBirthDate(birthDate) {
-  return new Date(birthDate);
-}
-function transformNepaliBirthDate(nepaliBirthDate) {
-  return new Date(nepaliBirthDate);
-}
-function transformLastDonatedDate(lastDonatedDate) {
-  return new Date(lastDonatedDate);
-}
 function transformGender(gender) {
   if (gender === "M") {
     return Gender.MALE;
@@ -32,90 +15,117 @@ function transformGender(gender) {
   }
 }
 
-function transfromPhone(phone) {
-  return phone;
-}
-
-function transformEmail(email) {
-  return email;
-}
-
-function transformBloodGroup(bloodGroup) {
+function transformBloodGroup(bloodGroup, rhFactor) {
   switch (bloodGroup) {
-    case "A+":
-      return BloodGroup.A_POSITIVE;
-    case "A-":
-      return BloodGroup.A_NEGATIVE;
-    case "B+":
-      return BloodGroup.B_POSITIVE;
-    case "B-":
-      return BloodGroup.B_NEGATIVE;
-    case "AB+":
-      return BloodGroup.AB_POSITIVE;
-    case "AB-":
-      return BloodGroup.AB_NEGATIVE;
-    case "O+":
-      return BloodGroup.O_POSITIVE;
-    case "O-":
-      return BloodGroup.O_NEGATIVE;
+    case "A":
+      return rhFactor === "+" ? BloodGroup.A_POSITIVE : BloodGroup.A_NEGATIVE;
+    case "B":
+      return rhFactor === "+" ? BloodGroup.B_POSITIVE : BloodGroup.B_NEGATIVE;
+    case "AB":
+      return rhFactor === "+" ? BloodGroup.AB_POSITIVE : BloodGroup.AB_NEGATIVE;
+    case "O":
+      return rhFactor === "+" ? BloodGroup.O_POSITIVE : BloodGroup.O_NEGATIVE;
     default:
       return BloodGroup.DONT_KNOW;
   }
 }
 
 function transformCreateAt(createdat) {
-  return new DataTransfer(createdat);
+  return new Date(createdat);
 }
 
 function transformUpdateAt(updatedat) {
-  return new DataTransfer(updatedat);
+  return new Date(updatedat);
 }
 
 function transformDonorData(document) {
   return {
-    uuid: transformId(document._id), //create new
-    name: transformName(document.name),
-    phone: transfromPhone(document.phone),
-    email: transformEmail(document.email),
+    donorMongoId: transformId(document._id),
+    name: document.name,
+    phone: document.phone,
+    email: document.email,
     gender: transformGender(document.gender),
-    dop: transformBirthDate(document.dob),
-    dopNp: transformNepaliBirthDate(document.dob_np),
-    location: transformLocation(document.address),
-    bloodGroup: transformBloodGroup(document.blood_group),
-    lastDonated: transformLastDonatedDate(document.last_donated_date),
 
+    dop:
+      document.dob && !isNaN(new Date(document.dob))
+        ? new Date(document.dob)
+        : null,
+    dopNp:
+      document.dob_np && !isNaN(new Date(document.dob_np))
+        ? new Date(document.dob_np)
+        : null,
+
+    location: document.address ? document.address : "",
+    isActive: document.is_active,
+
+    bloodInfo: {
+      group:
+        document.blood_info &&
+        document.blood_info.group &&
+        document.blood_info.rh_factor
+          ? transformBloodGroup(
+              document.blood_info.group,
+              document.blood_info.rh_factor
+            )
+          : "DONT_KNOW",
+      rh_factor: document.blood_info ? document.blood_info.rh_factor : null,
+      verified_date:
+        document.blood_info &&
+        document.blood_info.verified_date &&
+        !isNaN(new Date(document.blood_info.verified_date))
+          ? new Date(document.blood_info.verified_date)
+          : null,
+    },
+    source: {
+      name: document.source ? document.source.name : "",
+      id: document.source ? document.source.id : "",
+    },
+
+    geoLocation: {
+      longitude: document.geo_location ? document.geo_location.longitude : null,
+      latitude:
+        document.geo_location && document.geo_location.latitude
+          ? document.geo_location.latitude
+          : null,
+    },
+
+    donationLegacy: document.donations_legacy
+      ? document.donations_legacy.map((date) => new Date(date))
+      : [],
+
+    lastDonated: document.lastDonated ? new Date(document.lastDonated) : null,
     createdAt: transformCreateAt(document.created_at),
     updatedAt: transformUpdateAt(document.updated_at),
-
-    // blood_info: {
-    //   group: { type: String, enum: ["A", "B", "O", "AB", ""] },
-    //   rh_factor: { type: String, enum: ["+", "-"] },
-    //   is_verified: { type: Boolean, required: true, default: false },
-    //   verified_date: { type: Date },
-    //   verified_by: { type: ObjectId, ref: "Organization" }
-    // },
-
-    //    donations_legacy: [{ type: Date }],
-
-    // geo_location: {
-    //   longitude: Number,
-    //   latitude: Number
-    // },
-
-    // source: {
-    //   name: String,
-    //   id: String
-    // },
-
-    //Research this field
-    //is_active: { type: Boolean, default: true },
-
-    // doNotCall Boolean (False)
-
-    //donorMongoId transformId(document._id),
   };
 }
 
 module.exports = {
   transformDonorData,
 };
+
+// blood_info: {
+//   group: { type: String, enum: ["A", "B", "O", "AB", ""] },
+//   rh_factor: { type: String, enum: ["+", "-"] },
+//   is_verified: { type: Boolean, required: true, default: false },
+//   verified_date: { type: Date },
+//   verified_by: { type: ObjectId, ref: "Organization" }
+// },
+
+//    donations_legacy: [{ type: Date }],
+
+// geo_location: {
+//   longitude: Number,
+//   latitude: Number
+// },
+
+// source: {
+//   name: String,
+//   id: String
+// },
+
+//Research this field
+//is_active: { type: Boolean, default: true },
+
+// doNotCall Boolean (False)
+
+//donorMongoId transformId(document._id),
