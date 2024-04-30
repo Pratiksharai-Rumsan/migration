@@ -18,15 +18,15 @@ function transformGender(gender) {
 function transformBloodGroup(bloodGroup, rhFactor) {
   switch (bloodGroup) {
     case "A":
-      return rhFactor === "+" ? BloodGroup.A_POSITIVE : BloodGroup.A_NEGATIVE;
+      return rhFactor === "+" ? "A_POSITIVE" : "A_NEGATIVE";
     case "B":
-      return rhFactor === "+" ? BloodGroup.B_POSITIVE : BloodGroup.B_NEGATIVE;
+      return rhFactor === "+" ? "B_POSITIVE" : "B_NEGATIVE";
     case "AB":
-      return rhFactor === "+" ? BloodGroup.AB_POSITIVE : BloodGroup.AB_NEGATIVE;
+      return rhFactor === "+" ? "AB_POSITIVE" : "AB_NEGATIVE";
     case "O":
-      return rhFactor === "+" ? BloodGroup.O_POSITIVE : BloodGroup.O_NEGATIVE;
+      return rhFactor === "+" ? "O_POSITIVE" : "O_NEGATIVE";
     default:
-      return BloodGroup.DONT_KNOW;
+      return "DONT_KNOW";
   }
 }
 

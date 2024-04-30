@@ -1,24 +1,16 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-function transformName(name) {
-  return name;
-}
-
-function transformLocation(location) {
-  return location;
-}
-
 function transformDate(date) {
   return new Date(date);
 }
 
-function transformStartTime(startTime) {
-  return startTime;
-}
-
-function transformEndTime(endTime) {
-  return endTime;
+function parseTimeString(timeString) {
+  const [hours, minutes] = timeString.split(":").map(Number);
+  const date = new Date();
+  date.setHours(hours);
+  date.setMinutes(minutes);
+  return date;
 }
 
 function transformBeneficiary(beneficiary) {
@@ -53,11 +45,12 @@ async function lookupOrganizationId(orgMongoId) {
 async function transformEventData(document) {
   const convertOrgId = transformBeneficiary(document.beneficiary);
   const organizationId = await lookupOrganizationId(convertOrgId);
+
   console.log(organizationId, "organizationId from eventtransform");
   return {
     eventMongoId: transformId(document._id),
-    name: transformName(document.name),
-    location: transformLocation(document.location),
+    name: document.name,
+    location: document.location,
     contactInfo: {
       phone: document.phone,
 
@@ -66,9 +59,13 @@ async function transformEventData(document) {
     target: transformTarget(document.target),
 
     date: transformDate(document.date),
-    startTime: document.startTime,
+    //startTime: document.startTime,
+    startTime: document.startTime ? parseTimeString(document.startTime) : null,
 
-    endTime: document.endTime,
+    //ndTime: document.endTime,
+    endTime: document.endTime ? parseTimeString(document.endTime) : null,
+
+    description: document.description,
 
     organizationId: organizationId, //Hlb Org UUID
     //orgMongoId: transformBeneficiary(document.beneficiary),

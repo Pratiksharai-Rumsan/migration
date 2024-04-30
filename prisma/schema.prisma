@@ -42,8 +42,8 @@ model Event {
   volunteers     Volunteer[]
   date           DateTime
   endDate        DateTime?
-  startTime      String?
-  endTime        String?
+  startTime      DateTime?
+  endTime        DateTime?
   isClosed       Boolean     @default(false)
   organizationId String?
 
