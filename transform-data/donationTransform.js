@@ -26,7 +26,7 @@ async function lookupDonorId(donorMongoId) {
   const donor = await prisma.donor.findUnique({
     where: { donorMongoId },
   });
-  console.log(donor, "donor from donor table");
+
   if (!donor) {
     //throw new Error(`Donor with DonorMongoId ${donorMongoId} not found`);
     console.warn(`Donor with DonorMongoId ${donorMongoId} not found`);
@@ -48,11 +48,10 @@ async function lookupEventId(eventMongoId) {
 async function transformDonationData(document) {
   const convertDonorId = document.donor.toString();
   const convertEventId = document.event.toString();
-  console.log(convertEventId, "eventId");
+
   const donorNewId = await lookupDonorId(convertDonorId);
   const eventNewId = await lookupEventId(convertEventId);
-  console.log(donorNewId, "donornewId");
-  console.log(eventNewId, "evnetNewId");
+
   return {
     bloodBagId: document.blood_info ? document.blood_info.bag_number : null,
 

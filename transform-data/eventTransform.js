@@ -13,10 +13,6 @@ function parseTimeString(timeString) {
   return date;
 }
 
-function transformBeneficiary(beneficiary) {
-  return beneficiary.toString();
-}
-
 function transformCreateAt(createdat) {
   return new Date(createdat);
 }
@@ -42,9 +38,23 @@ async function lookupOrganizationId(orgMongoId) {
   return organization.uuid;
 }
 
+async function lookupOrganizerId(teamMongoId) {
+  const organizer = await prisma.organizer.findUnique({
+    where: { teamMongoId },
+  });
+  if (!organizer) {
+    //throw new Error(`Organization with OrgMongoId ${orgMongoId} not found`);
+    console.warn(`Event with teamMongoId ${teamMongoId} not found`);
+  }
+  return organizer.uuid;
+}
+
 async function transformEventData(document) {
-  const convertOrgId = transformBeneficiary(document.beneficiary);
-  const organizationId = await lookupOrganizationId(convertOrgId);
+  const convertOrganizationId = document.beneficiary.toString();
+  const convertOrganizerId = document.team.toString();
+
+  const organizationId = await lookupOrganizationId(convertOrganizationId);
+  const organizerId = await lookupOrganizerId(convertOrganizerId);
 
   console.log(organizationId, "organizationId from eventtransform");
   return {
@@ -59,18 +69,20 @@ async function transformEventData(document) {
     target: transformTarget(document.target),
 
     date: transformDate(document.date),
-    //startTime: document.startTime,
+
     startTime: document.startTime ? parseTimeString(document.startTime) : null,
 
-    //ndTime: document.endTime,
     endTime: document.endTime ? parseTimeString(document.endTime) : null,
 
     description: document.description,
 
-    organizationId: organizationId, //Hlb Org UUID
+    //organizer <-- teamid from mongo team table
+    organizerId: organizerId,
+
+    //organizationId: organizationId, //Hlb Org UUID
+    organizationId: organizationId,
     //orgMongoId: transformBeneficiary(document.beneficiary),
     isClosed: document.is_closed,
-    //beneficiaryId: transformBeneficiary(document.team),
     createdAt: transformCreateAt(document.created_at),
     updatedAt: transformUpdateAt(document.updated_at),
   };

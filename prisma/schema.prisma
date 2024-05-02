@@ -27,32 +27,49 @@ model Organization {
   updatedAt   DateTime @updatedAt
 
   @@index([name])
+  @@map("tbl_organizations")
+}
+
+model Organizer {
+  id          Int     @id @default(autoincrement())
+  uuid        String  @unique @default(uuid())
+  teamMongoId String  @unique
+  name        String
+  email       String?
+  address     String?
+  phone       String
+  events      Event[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+  @@map("tbl_organizers")
 }
 
 model Event {
-  id             Int         @id @default(autoincrement())
-  uuid           String      @unique @default(uuid())
-  eventMongoId   String      @unique 
-  name           String
-  contactInfo    Json
-  location       String
-  geoLocation    Json?
-  bloodBank      String?
-  target         Int?
-  volunteers     Volunteer[]
-  date           DateTime
-  endDate        DateTime?
-  startTime      DateTime?
-  endTime        DateTime?
-  isClosed       Boolean     @default(false)
+  id            Int          @id @default(autoincrement())
+  uuid          String       @unique @default(uuid())
+  eventMongoId  String       @unique
+  name          String
+  contactInfo   Json
+  location      String
+  geoLocation   Json?
+  bloodBank     String?
+  target        Int?
+  volunteers    Volunteer[]
+  date          DateTime
+  endDate       DateTime?
+  startTime     DateTime?
+  endTime       DateTime?
+  isClosed      Boolean      @default(false)
   organizationId String?
-
   organization  Organization? @relation(fields: [organizationId], references: [uuid])
-  beneficiaryId String?
+  organizerId   String?
+  organizer     Organizer?   @relation(fields: [organizerId], references: [uuid])
   donations     Donation[]
   donors        Donor[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 
   @@index([name])
   @@map("tbl_events")
@@ -62,7 +79,7 @@ model Donor {
   id             Int        @id @default(autoincrement())
   uuid           String     @unique @default(uuid())
   donorMongoId   String     @unique
-  name           String      
+  name           String
   phone          String     @unique
   email          String?
   dop            DateTime?
@@ -71,7 +88,7 @@ model Donor {
   bloodInfo      Json
   location       String
   lastDonated    DateTime?
-  isActive       Boolean   @default(false)
+  isActive       Boolean    @default(false)
   source         Json?
   geoLocation    Json
   donation       Donation[]
@@ -102,8 +119,6 @@ model Donation {
   donor        Donor?        @relation(fields: [donorId], references: [uuid])
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-
-  
 
   @@map("tbl_donations")
 }
