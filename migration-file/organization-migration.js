@@ -10,7 +10,7 @@ const mongoUrl = "mongodb://localhost:27017";
 
 const mongoDbName = "donation-migration";
 const mongoCollectionName = "organizations";
-const processedOrganizationIds = new Set();
+//const processedOrganizationIds = new Set();
 
 async function connectMongoDB() {
   const mongoClient = new MongoClient(mongoUrl);
@@ -32,17 +32,17 @@ async function migrateData() {
 
   try {
     for (const document of mongoData) {
-      const organizationId = document._id.toString();
+      //const organizationId = document._id.toString();
 
-      if (processedOrganizationIds.has(organizationId)) {
-        console.log(`Skipping duplicate event with Id:${organizationId}`);
-        continue;
-      }
+      // if (processedOrganizationIds.has(organizationId)) {
+      //   console.log(`Skipping duplicate event with Id:${organizationId}`);
+      //   continue;
+      // }
       const transformedDocument = transformOrganizationData(document);
       await prisma.organization.create({
         data: transformedDocument,
       });
-      processedOrganizationIds.add(organizationId);
+      //processedOrganizationIds.add(organizationId);
     }
   } finally {
     await prisma.$disconnect();
