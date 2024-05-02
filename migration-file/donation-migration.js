@@ -31,7 +31,6 @@ async function migrateData() {
   try {
     for (const document of mongoData) {
       const transformedData = await transformDonationData(document);
-      console.log(transformedData, "transformedDonationData");
 
       await prisma.donation.create({
         data: transformedData,
