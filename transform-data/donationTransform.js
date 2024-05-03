@@ -11,6 +11,8 @@ function transformBagType(bloodBagType) {
       return BloodBagType.DOUBLE;
     case "triple":
       return BloodBagType.TRIPLE;
+    default:
+      return BloodBagType.SINGLE;
   }
 }
 
