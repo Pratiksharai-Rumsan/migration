@@ -113,14 +113,34 @@ model Donation {
   note         String?
   extras       Json?
   custom       String?
-  eventId      String?
-  donorId      String?
-  event        Event?        @relation(fields: [eventId], references: [uuid])
-  donor        Donor?        @relation(fields: [donorId], references: [uuid])
+  eventId      String
+  donorId      String
+  event        Event         @relation(fields: [eventId], references: [uuid])
+  donor        Donor         @relation(fields: [donorId], references: [uuid])
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
   @@map("tbl_donations")
+}
+
+model NotFound {
+  id           Int           @id @default(autoincrement())
+  uuid         String        @unique @default(uuid())
+  donationId   String
+  bloodBagType BloodBagType? @default(SINGLE)
+  bloodBagId   String?
+  tubeId       String?
+  consentUrl   String?
+  rejectReason Json?
+  note         String?
+  extras       Json?
+  custom       String?
+  eventId      String?
+  donorId      String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@map("tbl_notFounds")
 }
 
 model Volunteer {
