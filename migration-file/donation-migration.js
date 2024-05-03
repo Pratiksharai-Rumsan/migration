@@ -27,44 +27,57 @@ async function exportData(mongoCollection) {
 async function migrateData() {
   const mongoCollection = await connectMongoDB();
   const mongoData = await exportData(mongoCollection);
-  let skippedEventCount = 0;
-  let skippedDonorCount = 0;
+  //let skippedEventCount = 0;
+  //let skippedDonorCount = 0;
+  let skippedCount = 0;
 
   try {
     for (const document of mongoData) {
       const transformedData = await transformDonationData(document);
 
-      if (
-        transformedData.eventId === undefined ||
-        transformedData.eventId === null
-      ) {
-        skippedEventCount++;
-        continue;
-      }
+      // if (
+      //   transformedData.eventId === undefined ||
+      //   transformedData.eventId === null
+      // ) {
+      //   skippedEventCount++;
+      //   continue;
+      // }
+
+      // if (
+      //   transformedData.donorId === undefined ||
+      //   transformedData.donorId === null
+      // ) {
+      //   skippedDonorCount++;
+      //   continue;
+      // }
+
+      // await prisma.donation.create({
+      //   data: transformedData,
+      // });
 
       if (
+        transformedData.eventId === undefined ||
+        transformedData.eventId === null ||
         transformedData.donorId === undefined ||
         transformedData.donorId === null
       ) {
-        skippedDonorCount++;
-        continue;
-      }
+        skippedCount++;
 
-      await prisma.donation.create({
-        data: transformedData,
-      });
+        await prisma.notFound.create({
+          data: transformedData,
+        });
+      } else {
+        await prisma.donation.create({
+          data: transformedData,
+        });
+      }
     }
   } finally {
     await prisma.$disconnect();
   }
 
   console.log("Migration completed");
-  console.log(
-    `Skipped ${skippedEventCount} documents due to undefined or null eventId.`
-  );
-  console.log(
-    `Skipped ${skippedDonorCount} documents due to undefined or null donorId.`
-  );
+  console.log(`Skipped ${skippedCount} record`);
 }
 
 migrateData().catch(console.error);

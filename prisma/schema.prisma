@@ -126,7 +126,6 @@ model Donation {
 model NotFound {
   id           Int           @id @default(autoincrement())
   uuid         String        @unique @default(uuid())
-  donationId   String
   bloodBagType BloodBagType? @default(SINGLE)
   bloodBagId   String?
   tubeId       String?
