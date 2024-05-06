@@ -25,7 +25,7 @@ async function exportData(mongoCollection) {
   return mongoData;
 }
 
-async function migrateData() {
+async function migrateOrganizationData() {
   const mongoCollection = await connectMongoDB();
 
   const mongoData = await exportData(mongoCollection);
@@ -48,7 +48,10 @@ async function migrateData() {
     await prisma.$disconnect();
   }
 
-  console.log("Migration completed");
+  console.log("Organization Migration completed");
 }
 
-migrateData().catch(console.error);
+//migrateOrganizationData().catch(console.error);
+module.exports = {
+  migrateOrganizationData,
+};

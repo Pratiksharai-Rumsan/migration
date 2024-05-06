@@ -22,14 +22,13 @@ async function exportData(mongoCollection) {
   return mongoData;
 }
 
-async function migrateData() {
+async function migrateEventData() {
   const mongoCollection = await connectMongoDB();
   const mongoData = await exportData(mongoCollection);
 
   try {
     for (const document of mongoData) {
       const transformedData = await transformEventData(document);
-      console.log(transformedData, "transfromEvnetData");
 
       await prisma.event.create({
         data: transformedData,
@@ -39,7 +38,10 @@ async function migrateData() {
     await prisma.$disconnect();
   }
 
-  console.log("Migration completed");
+  console.log("Event Migration completed");
 }
 
-migrateData().catch(console.error);
+//migrateEventData().catch(console.error);
+module.exports = {
+  migrateEventData,
+};

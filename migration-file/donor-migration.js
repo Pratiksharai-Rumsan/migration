@@ -22,14 +22,13 @@ async function exportData(mongoCollection) {
   return mongoData;
 }
 
-async function migrateData() {
+async function migrateDonorData() {
   const mongoCollection = await connectMongoDB();
   const mongoData = await exportData(mongoCollection);
 
   try {
     for (const document of mongoData) {
       const transformedData = transformDonorData(document);
-      console.log(transformedData, "transformedDonorData");
 
       await prisma.donor.create({
         data: transformedData,
@@ -39,7 +38,11 @@ async function migrateData() {
     await prisma.$disconnect();
   }
 
-  console.log("Migration completed");
+  console.log("Donor Migration completed");
 }
 
-migrateData().catch(console.error);
+//migrateDonorData().catch(console.error);
+
+module.exports = {
+  migrateDonorData,
+};

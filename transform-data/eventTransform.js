@@ -56,7 +56,6 @@ async function transformEventData(document) {
   const organizationId = await lookupOrganizationId(convertOrganizationId);
   const organizerId = await lookupOrganizerId(convertOrganizerId);
 
-  console.log(organizationId, "organizationId from eventtransform");
   return {
     eventMongoId: transformId(document._id),
     name: document.name,

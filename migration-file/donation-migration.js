@@ -24,7 +24,7 @@ async function exportData(mongoCollection) {
   return mongoData;
 }
 
-async function migrateData() {
+async function migrateDonationData() {
   const mongoCollection = await connectMongoDB();
   const mongoData = await exportData(mongoCollection);
   //let skippedEventCount = 0;
@@ -76,11 +76,14 @@ async function migrateData() {
     await prisma.$disconnect();
   }
 
-  console.log("Migration completed");
+  console.log("Donations Migration completed");
   console.log(`Skipped ${skippedCount} record`);
 }
 
-migrateData().catch(console.error);
+//migrateDonationData().catch(console.error);
+module.exports = {
+  migrateDonationData,
+};
 
 //@@unique([donorId, eventId], name: "donorEventIdentifier")
 //@@unique([bloodBagId, eventId], name: "eventBloodbagIdentifier")
